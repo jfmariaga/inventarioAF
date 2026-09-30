@@ -5,11 +5,37 @@
         </h2>
     </x-slot>
 
+    @php
+        $acciones = [];
+
+        if (auth()->user()->can('inventario.ver')) {
+            $acciones[] = 'inventariar activos';
+        }
+
+        if (auth()->user()->can('cumplimiento.ver')) {
+            $acciones[] = 'consultar el cumplimiento';
+        }
+
+        if (auth()->user()->canAny(['admin.usuarios', 'admin.roles', 'admin.periodos', 'admin.catalogos'])) {
+            $acciones[] = 'administrar el sistema';
+        }
+
+        $listaAcciones = match (count($acciones)) {
+            0 => null,
+            1 => $acciones[0],
+            default => implode(', ', array_slice($acciones, 0, -1)).' o '.end($acciones),
+        };
+    @endphp
+
     <div class="space-y-6">
         <div class="card card-pad">
             <p class="text-sm text-ink-600">
-                Hola, <span class="font-medium text-ink-900">{{ auth()->user()->name }}</span>. Usa el menú de la
-                izquierda para inventariar activos, consultar el cumplimiento, o administrar el sistema.
+                Hola, <span class="font-medium text-ink-900">{{ auth()->user()->name }}</span>.
+                @if ($listaAcciones)
+                    Usa el menú de la izquierda para {{ $listaAcciones }}.
+                @else
+                    Aún no tienes accesos asignados; contacta a un Administrador.
+                @endif
             </p>
         </div>
 
