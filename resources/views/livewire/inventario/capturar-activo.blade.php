@@ -193,7 +193,7 @@ new #[Layout('layouts.app')] class extends Component
                                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
                                     </svg>
                                 </span>
-                                <input id="fotoPlaca" type="file" accept="image/*" wire:model="form.fotoPlaca" class="block w-full text-sm text-ink-600 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100" />
+                                <input id="fotoPlaca" type="file"  wire:model="form.fotoPlaca" class="block w-full text-sm text-ink-600 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100" />
                             </div>
 
                             <x-input-error :messages="$errors->get('form.fotoPlaca')" class="mt-2" />
