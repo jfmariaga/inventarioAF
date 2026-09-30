@@ -5,32 +5,53 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'Inventario AF') }}</title>
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
-        <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
+    <body class="font-sans">
+        <div x-data="{ sidebar: false }" class="min-h-screen lg:flex">
+
+            {{-- Backdrop (móvil) --}}
+            <div x-show="sidebar" x-transition.opacity x-cloak
+                 class="fixed inset-0 z-30 bg-ink-900/40 lg:hidden" @click="sidebar = false"></div>
+
             <livewire:layout.navigation />
 
-            <!-- Page Heading -->
-            @if (isset($header))
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
+            {{-- Contenido --}}
+            <div class="flex min-w-0 flex-1 flex-col">
+                <header class="sticky top-0 z-20 border-b border-ink-200 bg-white/80 backdrop-blur">
+                    <div class="flex items-center gap-4 px-4 py-3 sm:px-6 lg:px-8">
+                        <button @click="sidebar = !sidebar" class="btn btn-ghost -ml-2 p-2 lg:hidden">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                        </button>
+                        <div class="min-w-0 flex-1">
+                            @isset($header)
+                                {{ $header }}
+                            @else
+                                <h1 class="text-lg font-semibold text-ink-900">{{ config('app.name') }}</h1>
+                            @endisset
+                        </div>
                     </div>
                 </header>
-            @endif
 
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
+                <main class="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+                    <div class="mx-auto min-w-0 max-w-[100rem]">
+                        {{ $slot }}
+                    </div>
+                </main>
+            </div>
         </div>
+
+        @if (session('status'))
+            <script>
+                document.addEventListener('DOMContentLoaded', () => window.toast('success', @json(session('status'))));
+            </script>
+        @endif
+        @if (session('error'))
+            <script>
+                document.addEventListener('DOMContentLoaded', () => window.toast('error', @json(session('error'))));
+            </script>
+        @endif
     </body>
 </html>
