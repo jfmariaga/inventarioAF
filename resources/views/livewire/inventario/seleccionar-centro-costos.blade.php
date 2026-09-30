@@ -15,9 +15,16 @@ new #[Layout('layouts.app')] class extends Component
             return collect();
         }
 
+        $termino = trim($this->busqueda);
+
         return CentroCostos::with('empresa')
-            ->where('codigo', 'like', "%{$this->busqueda}%")
-            ->orWhere('descripcion', 'like', "%{$this->busqueda}%")
+            ->where(function ($query) use ($termino) {
+                $query->where('codigo', 'like', "%{$termino}%")
+                    ->orWhere('descripcion', 'like', "%{$termino}%")
+                    ->orWhereHas('activos', function ($query) use ($termino) {
+                        $query->where('numero_activo', 'like', "%{$termino}%");
+                    });
+            })
             ->orderBy('codigo')
             ->limit(20)
             ->get();
@@ -40,7 +47,7 @@ new #[Layout('layouts.app')] class extends Component
                 wire:model.live.debounce.300ms="busqueda"
                 id="busqueda"
                 type="text"
-                placeholder="Código o nombre del centro de costos..."
+                placeholder="Código o nombre del centro de costos, o número de activo..."
                 class="input"
                 autofocus
             />
