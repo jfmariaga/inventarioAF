@@ -29,8 +29,8 @@ class CapturaActivoForm extends Form
 
     /**
      * Reglas condicionales por estado (FR-011/FR-012): "verificado" exige
-     * ubicación y ambas fotos (salvo que ya exista una guardada);
-     * "no_encontrado" exige solo observación.
+     * ubicación y la foto del equipo (salvo que ya exista una guardada);
+     * la foto de la placa es opcional. "no_encontrado" exige solo observación.
      */
     public function rules(): array
     {
@@ -41,7 +41,7 @@ class CapturaActivoForm extends Form
             'ubicacion' => [Rule::requiredIf($exigeEvidencia), 'nullable', 'string', 'max:150'],
             'observacion' => [Rule::requiredIf($this->estado === 'no_encontrado'), 'nullable', 'string', 'max:2000'],
             'fotoEquipo' => [Rule::requiredIf($exigeEvidencia && ! $this->yaTieneFotoEquipo), 'nullable', 'image', 'max:10240'],
-            'fotoPlaca' => [Rule::requiredIf($exigeEvidencia && ! $this->yaTieneFotoPlaca), 'nullable', 'image', 'max:10240'],
+            'fotoPlaca' => ['nullable', 'image', 'max:10240'],
         ];
     }
 
@@ -51,7 +51,6 @@ class CapturaActivoForm extends Form
             'ubicacion.required' => 'La ubicación es obligatoria para este estado.',
             'observacion.required' => 'La observación es obligatoria cuando el activo no se encuentra.',
             'fotoEquipo.required' => 'La foto del equipo es obligatoria para este estado.',
-            'fotoPlaca.required' => 'La foto de la placa es obligatoria para este estado.',
         ];
     }
 }

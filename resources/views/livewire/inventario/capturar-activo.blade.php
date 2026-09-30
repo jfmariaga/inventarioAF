@@ -156,7 +156,7 @@ new #[Layout('layouts.app')] class extends Component
                         </div>
 
                         <div>
-                            <label class="field-label">Foto del equipo</label>
+                            <label class="field-label">Foto del equipo (obligatoria)</label>
 
                             @if ($form->fotoEquipo)
                                 <img src="{{ $form->fotoEquipo->temporaryUrl() }}" class="mb-2 h-32 w-32 rounded-lg border border-ink-200 object-cover" alt="Previsualización foto del equipo" />
@@ -164,7 +164,7 @@ new #[Layout('layouts.app')] class extends Component
                                 <img src="{{ route('fotos.mostrar', [$detalle, 'equipo']) }}" class="mb-2 h-32 w-32 rounded-lg border border-ink-200 object-cover cursor-zoom-in" alt="Foto del equipo guardada" onclick="verFoto('{{ route('fotos.mostrar', [$detalle, 'equipo']) }}', 'Foto del equipo')" />
                             @endif
 
-                            <input type="file" accept="image/*" capture="environment" wire:model="form.fotoEquipo" class="block w-full text-sm text-ink-600 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100" />
+                            <input type="file" accept="image/*" wire:model="form.fotoEquipo" class="block w-full text-sm text-ink-600 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100" />
                             <div wire:loading wire:target="form.fotoEquipo" class="mt-1 text-xs text-ink-400">Subiendo foto…</div>
                             @if ($form->yaTieneFotoEquipo && ! $form->fotoEquipo)
                                 <p class="mt-1 text-xs text-ink-400">Ya hay una foto guardada; sube una nueva solo si quieres reemplazarla.</p>
@@ -181,7 +181,7 @@ new #[Layout('layouts.app')] class extends Component
                                 <img src="{{ route('fotos.mostrar', [$detalle, 'placa']) }}" class="mb-2 h-32 w-32 rounded-lg border border-ink-200 object-cover cursor-zoom-in" alt="Foto de la placa guardada" onclick="verFoto('{{ route('fotos.mostrar', [$detalle, 'placa']) }}', 'Foto de la placa')" />
                             @endif
 
-                            <input type="file" accept="image/*" capture="environment" wire:model="form.fotoPlaca" class="block w-full text-sm text-ink-600 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100" />
+                            <input type="file" accept="image/*" wire:model="form.fotoPlaca" class="block w-full text-sm text-ink-600 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100" />
                             <div wire:loading wire:target="form.fotoPlaca" class="mt-1 text-xs text-ink-400">Subiendo foto…</div>
                             @if ($form->yaTieneFotoPlaca && ! $form->fotoPlaca)
                                 <p class="mt-1 text-xs text-ink-400">Ya hay una foto guardada; sube una nueva solo si quieres reemplazarla.</p>

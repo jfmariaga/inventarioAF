@@ -13,9 +13,16 @@ new #[Layout('layouts.app')] class extends Component
 
     public CentroCostos $centroCostos;
 
+    public string $busqueda = '';
+
     public function mount(CentroCostos $centroCostos): void
     {
         $this->centroCostos = $centroCostos;
+    }
+
+    public function updatingBusqueda(): void
+    {
+        $this->resetPage();
     }
 
     public function getInventarioAbiertoProperty(): ?Inventario
@@ -33,6 +40,14 @@ new #[Layout('layouts.app')] class extends Component
                     $query->where('inventario_id', $inventario->id);
                 }
             }])
+            ->when(trim($this->busqueda) !== '', function ($query) {
+                $termino = trim($this->busqueda);
+
+                $query->where(function ($query) use ($termino) {
+                    $query->where('numero_activo', 'like', "%{$termino}%")
+                        ->orWhere('denominacion', 'like', "%{$termino}%");
+                });
+            })
             ->orderBy('numero_activo')
             ->paginate(15);
     }
@@ -50,6 +65,15 @@ new #[Layout('layouts.app')] class extends Component
             No hay un periodo de inventario abierto actualmente. Contacta a un Administrador.
         </div>
     @else
+        <div class="mb-4 max-w-xs">
+            <input
+                type="search"
+                wire:model.live.debounce.300ms="busqueda"
+                placeholder="Buscar por activo o nombre..."
+                class="input"
+            />
+        </div>
+
         <div class="table-wrap card">
             <table class="dtable">
                 <thead>
@@ -58,11 +82,12 @@ new #[Layout('layouts.app')] class extends Component
                         <th>Denominación</th>
                         <th>Estado</th>
                         <th>Evidencia</th>
+                        <th>Observación</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($this->activos as $activo)
+                    @forelse ($this->activos as $activo)
                         @php($detalle = $activo->inventarioDetalles->first())
                         <tr>
                             <td class="font-medium text-ink-900">{{ $activo->numero_activo }}</td>
@@ -98,13 +123,22 @@ new #[Layout('layouts.app')] class extends Component
                                     @endif
                                 </div>
                             </td>
+                            <td class="max-w-xs truncate text-ink-500" title="{{ $detalle?->observacion }}">
+                                {{ $detalle?->observacion }}
+                            </td>
                             <td class="text-right">
                                 <a href="{{ route('inventario.capturar', $activo) }}" wire:navigate class="btn btn-secondary btn-xs">
                                     Capturar
                                 </a>
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="6" class="py-6 text-center text-ink-400">
+                                No se encontraron activos para "{{ $busqueda }}".
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
