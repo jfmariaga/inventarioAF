@@ -35,16 +35,23 @@ new #[Layout('layouts.app')] class extends Component
 
     public function getCentrosCostosProperty(): mixed
     {
+        $termino = trim($this->busqueda);
+
         return \App\Models\CentroCostos::with('empresa')
             ->withCount('activos')
-            ->when(trim($this->busqueda) !== '', function ($query) {
-                $termino = trim($this->busqueda);
+            ->when($termino !== '', function ($query) use ($termino) {
+                $query->with(['activos' => function ($query) use ($termino) {
+                    $query->where('numero_activo', 'like', "%{$termino}%")
+                        ->orWhere('denominacion', 'like', "%{$termino}%")
+                        ->limit(5);
+                }]);
 
                 $query->where(function ($query) use ($termino) {
                     $query->where('codigo', 'like', "%{$termino}%")
                         ->orWhere('descripcion', 'like', "%{$termino}%")
                         ->orWhereHas('activos', function ($query) use ($termino) {
-                            $query->where('numero_activo', 'like', "%{$termino}%");
+                            $query->where('numero_activo', 'like', "%{$termino}%")
+                                ->orWhere('denominacion', 'like', "%{$termino}%");
                         });
                 });
             })
@@ -101,6 +108,9 @@ new #[Layout('layouts.app')] class extends Component
                             <th>Descripción</th>
                             <th>Empresa</th>
                             <th>Activos</th>
+                            @if (trim($busqueda) !== '')
+                                <th>Activo encontrado</th>
+                            @endif
                             <th></th>
                         </tr>
                     </thead>
@@ -111,6 +121,18 @@ new #[Layout('layouts.app')] class extends Component
                                 <td>{{ $centroCostos->descripcion }}</td>
                                 <td>{{ $centroCostos->empresa->nombre }}</td>
                                 <td>{{ $centroCostos->activos_count }}</td>
+                                @if (trim($busqueda) !== '')
+                                    <td class="text-ink-500">
+                                        @forelse ($centroCostos->activos as $activo)
+                                            <div>
+                                                <span class="font-medium text-ink-900">{{ $activo->numero_activo }}</span>
+                                                — {{ $activo->denominacion }}
+                                            </div>
+                                        @empty
+                                            <span class="text-ink-300">—</span>
+                                        @endforelse
+                                    </td>
+                                @endif
                                 <td class="text-right">
                                     <a href="{{ route('inventario.centro-costos', $centroCostos) }}" wire:navigate class="btn btn-secondary btn-xs">
                                         Inventariar
