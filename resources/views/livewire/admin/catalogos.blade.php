@@ -37,9 +37,16 @@ new #[Layout('layouts.app')] class extends Component
     {
         return \App\Models\CentroCostos::with('empresa')
             ->withCount('activos')
-            ->when($this->busqueda, function ($query) {
-                $query->where('codigo', 'like', "%{$this->busqueda}%")
-                    ->orWhere('descripcion', 'like', "%{$this->busqueda}%");
+            ->when(trim($this->busqueda) !== '', function ($query) {
+                $termino = trim($this->busqueda);
+
+                $query->where(function ($query) use ($termino) {
+                    $query->where('codigo', 'like', "%{$termino}%")
+                        ->orWhere('descripcion', 'like', "%{$termino}%")
+                        ->orWhereHas('activos', function ($query) use ($termino) {
+                            $query->where('numero_activo', 'like', "%{$termino}%");
+                        });
+                });
             })
             ->orderBy('codigo')
             ->paginate(20);
@@ -83,7 +90,7 @@ new #[Layout('layouts.app')] class extends Component
             <input
                 wire:model.live.debounce.300ms="busqueda"
                 type="text"
-                placeholder="Buscar por código o nombre..."
+                placeholder="Buscar por código, nombre o número de activo..."
                 class="input mb-3 max-w-sm"
             />
             <div class="table-wrap card">
