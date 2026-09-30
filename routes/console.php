@@ -9,3 +9,10 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('inventario:purgar-fotos-antiguas')->daily();
+
+// En hosting compartido no hay un proceso `queue:work` corriendo de forma
+// permanente, así que procesamos la cola cada minuto vía el scheduler
+// (que a su vez depende del cron `php artisan schedule:run` cada minuto).
+Schedule::command('queue:work --stop-when-empty --max-time=50 --tries=3')
+    ->everyMinute()
+    ->withoutOverlapping();
