@@ -10,10 +10,12 @@
         "barryvdh/laravel-dompdf": "^3.1",
         "intervention/image-laravel": "^1.5",
         "laravel/framework": "^12.0",
+        "laravel/socialite": "^5",
         "laravel/tinker": "^2.10.1",
         "livewire/livewire": "^3.6.4",
         "livewire/volt": "^1.7.0",
         "phpoffice/phpspreadsheet": "^5.10",
+        "socialiteproviders/microsoft-azure": "^5.2",
         "spatie/laravel-permission": "^6.25"
     },
     "require-dev": {

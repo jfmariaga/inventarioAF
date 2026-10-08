@@ -28,6 +28,29 @@ new #[Layout('layouts.guest')] class extends Component
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
+    <x-input-error :messages="$errors->get('sso')" class="mb-4" />
+
+    @if (config('services.sso.activo'))
+        <a href="{{ route('sso.redirect') }}" class="btn-microsoft">
+            <svg width="20" height="20" viewBox="0 0 21 21" aria-hidden="true">
+                <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
+                <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+                <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
+                <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+            </svg>
+            <span>Continuar con Microsoft</span>
+        </a>
+    @endif
+
+    @if (! config('services.sso.activo') || ! config('services.sso.solo'))
+        @if (config('services.sso.activo'))
+            <div class="my-4 flex items-center gap-3 text-xs text-ink-400">
+                <span class="h-px flex-1 bg-ink-200"></span>
+                o con tu correo
+                <span class="h-px flex-1 bg-ink-200"></span>
+            </div>
+        @endif
+
     <form wire:submit="login" class="space-y-4">
         <!-- Email Address -->
         <div>
@@ -73,4 +96,5 @@ new #[Layout('layouts.guest')] class extends Component
             Regístrate
         </a>
     </p>
+    @endif
 </div>

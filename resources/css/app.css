@@ -38,6 +38,11 @@
     .btn-secondary {
         @apply border border-ink-300 bg-white text-ink-700 hover:bg-ink-50;
     }
+    .btn-microsoft {
+        @apply flex w-full items-center justify-center gap-2.5 rounded-lg border border-ink-300 bg-white
+               px-4 py-2 text-sm font-medium text-ink-700 shadow-sm transition-colors
+               hover:border-ink-400 hover:bg-ink-50;
+    }
     .btn-ghost {
         @apply text-ink-600 hover:bg-ink-100;
     }
