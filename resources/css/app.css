@@ -112,4 +112,24 @@
         @apply h-12 w-12 flex-none rounded-lg border border-line bg-surface-alt object-cover cursor-zoom-in
                dark:border-white/10 dark:bg-gray-800;
     }
+
+    /* Tom Select (selects con búsqueda, ver resources/js/app.js) */
+    .ts-wrapper .ts-control {
+        @apply rounded-lg border-line bg-surface text-sm shadow-sm;
+    }
+    .ts-wrapper.focus .ts-control {
+        @apply border-brand-500 ring-1 ring-brand-500;
+    }
+    .ts-dropdown {
+        @apply z-50 mt-1 rounded-lg border-line bg-surface text-sm shadow-lg;
+    }
+    .ts-dropdown .ts-dropdown-content {
+        @apply bg-surface;
+    }
+    .ts-dropdown [data-selectable] {
+        @apply px-3 py-2;
+    }
+    .ts-dropdown .active {
+        @apply bg-brand-50 text-brand-700;
+    }
 }

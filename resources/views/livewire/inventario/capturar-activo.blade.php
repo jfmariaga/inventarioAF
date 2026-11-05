@@ -182,7 +182,8 @@ new #[Layout('layouts.app')] class extends Component
                                 <x-input-error :messages="$errors->get('form.ubicacion')" class="mt-2" />
                             @else
                                 <div wire:ignore>
-                                    <select wire:model="form.ubicacionId" id="form-ubicacion" class="select">
+                                    <select wire:model="form.ubicacionId" id="form-ubicacion" class="select"
+                                            data-tom-select data-sync-text="form.ubicacion">
                                         <option value="">Selecciona una ubicación...</option>
                                         @foreach ($this->opcionesUbicacion as $opcion)
                                             <option value="{{ $opcion->id }}">{{ $opcion->etiqueta }}</option>
@@ -287,69 +288,4 @@ new #[Layout('layouts.app')] class extends Component
         </div>
     </div>
 
-    @if (! $form->sinCatalogoUbicaciones)
-        @push('styles')
-            <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.default.min.css" rel="stylesheet">
-            <style>
-                .ts-wrapper .ts-control {
-                    border-radius: 0.5rem;
-                    border-color: #EDE8EC;
-                    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-                    font-size: 0.875rem;
-                    background-color: #fff;
-                }
-                .ts-wrapper.focus .ts-control {
-                    border-color: #E24545;
-                    box-shadow: 0 0 0 1px #E24545;
-                }
-                .ts-dropdown {
-                    z-index: 50;
-                    margin-top: 0.25rem;
-                    border-radius: 0.5rem;
-                    border-color: #EDE8EC;
-                    background-color: #fff;
-                    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-                    font-size: 0.875rem;
-                }
-                .ts-dropdown .ts-dropdown-content {
-                    background-color: #fff;
-                }
-                .ts-dropdown [data-selectable] {
-                    padding: 0.5rem 0.75rem;
-                }
-                .ts-dropdown .active {
-                    background-color: #FBEAEA;
-                    color: #A81616;
-                }
-            </style>
-        @endpush
-
-        @push('scripts')
-            <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
-            <script>
-                function initTomSelectUbicacion() {
-                    const el = document.getElementById('form-ubicacion');
-
-                    if (! el || el.tomselect) {
-                        return;
-                    }
-
-                    new TomSelect(el, {
-                        create: false,
-                        onChange(value) {
-                            const opcion = this.options[value];
-                            @this.set('form.ubicacionId', value === '' ? null : parseInt(value, 10));
-                            @this.set('form.ubicacion', opcion ? opcion.text : null);
-                        },
-                    });
-                }
-
-                document.addEventListener('DOMContentLoaded', initTomSelectUbicacion);
-                document.addEventListener('livewire:navigated', initTomSelectUbicacion);
-                document.addEventListener('livewire:init', () => {
-                    Livewire.hook('morphed', () => initTomSelectUbicacion());
-                });
-            </script>
-        @endpush
-    @endif
 </div>

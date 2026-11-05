@@ -3,6 +3,8 @@ import './bootstrap';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import { Chart, registerables } from 'chart.js';
+import TomSelect from 'tom-select';
+import 'tom-select/dist/css/tom-select.default.css';
 
 Chart.register(...registerables);
 window.Chart = Chart;
@@ -66,6 +68,45 @@ function renderCharts() {
 
 document.addEventListener('DOMContentLoaded', renderCharts);
 document.addEventListener('livewire:navigated', renderCharts);
+
+// --- Selects con búsqueda (Tom Select), empaquetado localmente para no
+// depender de un CDN externo que puede estar bloqueado en la red del
+// usuario. Se activa en cualquier <select data-tom-select wire:model="..."> ---
+function initTomSelects() {
+    document.querySelectorAll('select[data-tom-select]').forEach((el) => {
+        if (el.tomselect) return;
+
+        const root = el.closest('[wire\\:id]');
+        if (! root) return;
+
+        const component = window.Livewire?.find(root.getAttribute('wire:id'));
+        if (! component) return;
+
+        const idProp = el.getAttribute('wire:model');
+        const textProp = el.dataset.syncText || null;
+
+        new TomSelect(el, {
+            create: false,
+            onChange(value) {
+                const opcion = this.options[value];
+
+                if (idProp) {
+                    component.set(idProp, value === '' ? null : parseInt(value, 10));
+                }
+
+                if (textProp) {
+                    component.set(textProp, opcion ? opcion.text : null);
+                }
+            },
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', initTomSelects);
+document.addEventListener('livewire:navigated', initTomSelects);
+document.addEventListener('livewire:init', () => {
+    Livewire.hook('morphed', () => initTomSelects());
+});
 
 // --- Estado del menú lateral (colapsado/expandido en escritorio) ---
 document.addEventListener('alpine:init', () => {

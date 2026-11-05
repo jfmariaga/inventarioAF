@@ -19,6 +19,7 @@
     },
     "dependencies": {
         "chart.js": "^4.5.1",
-        "sweetalert2": "^11.26.25"
+        "sweetalert2": "^11.26.25",
+        "tom-select": "^2.3.1"
     }
 }
