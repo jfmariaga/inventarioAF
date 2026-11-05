@@ -8,6 +8,7 @@
         <title>{{ config('app.name', 'Inventario AF') }}</title>
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @stack('styles')
     </head>
     <body class="font-sans">
         <div x-data="{ sidebar: false }" class="min-h-screen lg:flex">
@@ -53,5 +54,7 @@
                 document.addEventListener('DOMContentLoaded', () => window.toast('error', @json(session('error'))));
             </script>
         @endif
+
+        @stack('scripts')
     </body>
 </html>

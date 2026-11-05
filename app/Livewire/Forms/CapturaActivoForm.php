@@ -15,6 +15,16 @@ class CapturaActivoForm extends Form
 
     public ?string $ubicacion = null;
 
+    public ?int $ubicacionId = null;
+
+    public int $empresaId = 0;
+
+    public bool $sinCatalogoUbicaciones = false;
+
+    public ?string $condicion = null;
+
+    public ?string $motivoDesuso = null;
+
     public ?string $observacion = null;
 
     /** @var UploadedFile|null */
@@ -36,19 +46,35 @@ class CapturaActivoForm extends Form
     {
         $exigeEvidencia = $this->estado === 'verificado';
 
-        return [
+        $reglaUbicacion = $this->sinCatalogoUbicaciones
+            ? ['ubicacion' => [Rule::requiredIf($exigeEvidencia), 'nullable', 'string', 'max:150']]
+            : [
+                'ubicacionId' => [
+                    Rule::requiredIf($exigeEvidencia),
+                    'nullable',
+                    'integer',
+                    Rule::exists('ubicaciones', 'id')->where('empresa_id', $this->empresaId),
+                ],
+                'ubicacion' => ['nullable', 'string', 'max:150'],
+            ];
+
+        return array_merge([
             'estado' => ['required', 'in:verificado,no_encontrado'],
-            'ubicacion' => [Rule::requiredIf($exigeEvidencia), 'nullable', 'string', 'max:150'],
+            'condicion' => [Rule::requiredIf($exigeEvidencia), 'nullable', 'in:uso,desuso'],
+            'motivoDesuso' => [Rule::requiredIf($exigeEvidencia && $this->condicion === 'desuso'), 'nullable', 'string', 'max:2000'],
             'observacion' => [Rule::requiredIf($this->estado === 'no_encontrado'), 'nullable', 'string', 'max:2000'],
             'fotoEquipo' => [Rule::requiredIf($exigeEvidencia && ! $this->yaTieneFotoEquipo), 'nullable', 'image', 'max:10240'],
             'fotoPlaca' => ['nullable', 'image', 'max:10240'],
-        ];
+        ], $reglaUbicacion);
     }
 
     public function messages(): array
     {
         return [
             'ubicacion.required' => 'La ubicación es obligatoria para este estado.',
+            'ubicacionId.required' => 'Debes seleccionar una ubicación para este estado.',
+            'condicion.required' => 'La condición es obligatoria para este estado.',
+            'motivoDesuso.required' => 'Debes indicar el motivo del desuso.',
             'observacion.required' => 'La observación es obligatoria cuando el activo no se encuentra.',
             'fotoEquipo.required' => 'La foto del equipo es obligatoria para este estado.',
         ];

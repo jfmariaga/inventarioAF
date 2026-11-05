@@ -4,7 +4,9 @@ use App\Livewire\Forms\CapturaActivoForm;
 use App\Models\Activo;
 use App\Models\Inventario;
 use App\Models\InventarioDetalle;
+use App\Models\Ubicacion;
 use App\Services\ProcesadorFotoActivo;
+use Illuminate\Support\Collection;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 use Livewire\WithFileUploads;
@@ -57,9 +59,29 @@ new #[Layout('layouts.app')] class extends Component
             ? $this->detalle->estado
             : 'verificado';
         $this->form->ubicacion = $this->detalle->ubicacion;
+        $this->form->condicion = $this->detalle->condicion;
+        $this->form->motivoDesuso = $this->detalle->motivo_desuso;
         $this->form->observacion = $this->detalle->observacion;
         $this->form->yaTieneFotoEquipo = (bool) $this->detalle->foto_equipo_path;
         $this->form->yaTieneFotoPlaca = (bool) $this->detalle->foto_placa_path;
+
+        $empresa = $this->activo->centroCostos?->empresa;
+        $this->form->empresaId = $empresa?->id ?? 0;
+        $this->form->ubicacionId = $this->detalle->ubicacion_id;
+        $this->form->sinCatalogoUbicaciones = $empresa === null
+            || Ubicacion::where('empresa_id', $empresa->id)->doesntExist();
+    }
+
+    public function getOpcionesUbicacionProperty(): Collection
+    {
+        if ($this->form->empresaId === 0) {
+            return collect();
+        }
+
+        return Ubicacion::where('empresa_id', $this->form->empresaId)
+            ->orderBy('ubicacion')
+            ->orderBy('detalle_ubicacion')
+            ->get();
     }
 
     public function guardar(ProcesadorFotoActivo $procesador): void
@@ -97,6 +119,9 @@ new #[Layout('layouts.app')] class extends Component
         $this->detalle->update([
             'estado' => $this->form->estado,
             'ubicacion' => $this->form->ubicacion,
+            'ubicacion_id' => $this->form->ubicacionId,
+            'condicion' => $this->form->condicion,
+            'motivo_desuso' => $this->form->condicion === 'desuso' ? $this->form->motivoDesuso : null,
             'observacion' => $this->form->observacion,
             'foto_equipo_path' => $rutaFotoEquipo,
             'foto_equipo_path_anterior' => $rutaFotoEquipoAnterior,
@@ -151,9 +176,40 @@ new #[Layout('layouts.app')] class extends Component
                     @if ($form->estado === 'verificado')
                         <div>
                             <label class="field-label">Ubicación</label>
-                            <input type="text" wire:model="form.ubicacion" class="input" />
-                            <x-input-error :messages="$errors->get('form.ubicacion')" class="mt-2" />
+
+                            @if ($form->sinCatalogoUbicaciones)
+                                <input type="text" wire:model="form.ubicacion" class="input" />
+                                <x-input-error :messages="$errors->get('form.ubicacion')" class="mt-2" />
+                            @else
+                                <div wire:ignore>
+                                    <select wire:model="form.ubicacionId" id="form-ubicacion" class="select">
+                                        <option value="">Selecciona una ubicación...</option>
+                                        @foreach ($this->opcionesUbicacion as $opcion)
+                                            <option value="{{ $opcion->id }}">{{ $opcion->etiqueta }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <x-input-error :messages="$errors->get('form.ubicacionId')" class="mt-2" />
+                            @endif
                         </div>
+
+                        <div>
+                            <label class="field-label">Condición</label>
+                            <select wire:model.live="form.condicion" class="select">
+                                <option value="">Selecciona una condición...</option>
+                                <option value="uso">Uso</option>
+                                <option value="desuso">Desuso</option>
+                            </select>
+                            <x-input-error :messages="$errors->get('form.condicion')" class="mt-2" />
+                        </div>
+
+                        @if ($form->condicion === 'desuso')
+                            <div>
+                                <label class="field-label">Motivo del desuso</label>
+                                <textarea wire:model="form.motivoDesuso" rows="3" class="textarea"></textarea>
+                                <x-input-error :messages="$errors->get('form.motivoDesuso')" class="mt-2" />
+                            </div>
+                        @endif
 
                         <div>
                             <label class="field-label" for="fotoEquipo">Foto del equipo (obligatoria)</label>
@@ -230,4 +286,70 @@ new #[Layout('layouts.app')] class extends Component
             @endif
         </div>
     </div>
+
+    @if (! $form->sinCatalogoUbicaciones)
+        @push('styles')
+            <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.default.min.css" rel="stylesheet">
+            <style>
+                .ts-wrapper .ts-control {
+                    border-radius: 0.5rem;
+                    border-color: #cbd5e1;
+                    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+                    font-size: 0.875rem;
+                    background-color: #fff;
+                }
+                .ts-wrapper.focus .ts-control {
+                    border-color: #14b8a6;
+                    box-shadow: 0 0 0 1px #14b8a6;
+                }
+                .ts-dropdown {
+                    z-index: 50;
+                    margin-top: 0.25rem;
+                    border-radius: 0.5rem;
+                    border-color: #cbd5e1;
+                    background-color: #fff;
+                    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+                    font-size: 0.875rem;
+                }
+                .ts-dropdown .ts-dropdown-content {
+                    background-color: #fff;
+                }
+                .ts-dropdown [data-selectable] {
+                    padding: 0.5rem 0.75rem;
+                }
+                .ts-dropdown .active {
+                    background-color: #f0fdfa;
+                    color: #0f766e;
+                }
+            </style>
+        @endpush
+
+        @push('scripts')
+            <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+            <script>
+                function initTomSelectUbicacion() {
+                    const el = document.getElementById('form-ubicacion');
+
+                    if (! el || el.tomselect) {
+                        return;
+                    }
+
+                    new TomSelect(el, {
+                        create: false,
+                        onChange(value) {
+                            const opcion = this.options[value];
+                            @this.set('form.ubicacionId', value === '' ? null : parseInt(value, 10));
+                            @this.set('form.ubicacion', opcion ? opcion.text : null);
+                        },
+                    });
+                }
+
+                document.addEventListener('DOMContentLoaded', initTomSelectUbicacion);
+                document.addEventListener('livewire:navigated', initTomSelectUbicacion);
+                document.addEventListener('livewire:init', () => {
+                    Livewire.hook('morphed', () => initTomSelectUbicacion());
+                });
+            </script>
+        @endpush
+    @endif
 </div>

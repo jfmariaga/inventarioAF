@@ -17,6 +17,9 @@ class InventarioDetalle extends Model
         'activo_id',
         'estado',
         'ubicacion',
+        'ubicacion_id',
+        'condicion',
+        'motivo_desuso',
         'observacion',
         'foto_equipo_path',
         'foto_placa_path',
@@ -41,6 +44,11 @@ class InventarioDetalle extends Model
     public function activo(): BelongsTo
     {
         return $this->belongsTo(Activo::class);
+    }
+
+    public function ubicacionCatalogo(): BelongsTo
+    {
+        return $this->belongsTo(Ubicacion::class, 'ubicacion_id');
     }
 
     public function reservadoPor(): BelongsTo

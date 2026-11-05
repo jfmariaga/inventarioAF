@@ -18,4 +18,9 @@ class Empresa extends Model
     {
         return $this->hasMany(CentroCostos::class);
     }
+
+    public function ubicaciones(): HasMany
+    {
+        return $this->hasMany(Ubicacion::class);
+    }
 }
