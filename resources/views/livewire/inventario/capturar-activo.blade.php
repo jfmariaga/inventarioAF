@@ -293,20 +293,20 @@ new #[Layout('layouts.app')] class extends Component
             <style>
                 .ts-wrapper .ts-control {
                     border-radius: 0.5rem;
-                    border-color: #cbd5e1;
+                    border-color: #EDE8EC;
                     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
                     font-size: 0.875rem;
                     background-color: #fff;
                 }
                 .ts-wrapper.focus .ts-control {
-                    border-color: #14b8a6;
-                    box-shadow: 0 0 0 1px #14b8a6;
+                    border-color: #E24545;
+                    box-shadow: 0 0 0 1px #E24545;
                 }
                 .ts-dropdown {
                     z-index: 50;
                     margin-top: 0.25rem;
                     border-radius: 0.5rem;
-                    border-color: #cbd5e1;
+                    border-color: #EDE8EC;
                     background-color: #fff;
                     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
                     font-size: 0.875rem;
@@ -318,8 +318,8 @@ new #[Layout('layouts.app')] class extends Component
                     padding: 0.5rem 0.75rem;
                 }
                 .ts-dropdown .active {
-                    background-color: #f0fdfa;
-                    color: #0f766e;
+                    background-color: #FBEAEA;
+                    color: #A81616;
                 }
             </style>
         @endpush

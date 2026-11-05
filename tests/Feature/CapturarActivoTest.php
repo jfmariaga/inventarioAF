@@ -72,7 +72,7 @@ class CapturarActivoTest extends TestCase
         Volt::test('inventario.capturar-activo', ['activo' => $activo])
             ->set('form.estado', 'verificado')
             ->call('guardar')
-            ->assertHasErrors(['form.ubicacion', 'form.fotoEquipo', 'form.fotoPlaca']);
+            ->assertHasErrors(['form.ubicacion', 'form.condicion', 'form.fotoEquipo']);
     }
 
     public function test_captura_completa_marca_el_activo_como_inventariado(): void
@@ -88,6 +88,7 @@ class CapturarActivoTest extends TestCase
         Volt::test('inventario.capturar-activo', ['activo' => $activo])
             ->set('form.estado', 'verificado')
             ->set('form.ubicacion', 'Bodega principal')
+            ->set('form.condicion', 'uso')
             ->set('form.fotoEquipo', UploadedFile::fake()->image('equipo.jpg'))
             ->set('form.fotoPlaca', UploadedFile::fake()->image('placa.jpg'))
             ->call('guardar')

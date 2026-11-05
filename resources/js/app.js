@@ -7,7 +7,7 @@ import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
 window.Chart = Chart;
 
-const BRAND = '#0f766e'; // brand-700
+const BRAND = '#CF1D1D'; // brand-600
 
 const Toast = Swal.mixin({
     toast: true,
@@ -66,3 +66,14 @@ function renderCharts() {
 
 document.addEventListener('DOMContentLoaded', renderCharts);
 document.addEventListener('livewire:navigated', renderCharts);
+
+// --- Estado del menú lateral (colapsado/expandido en escritorio) ---
+document.addEventListener('alpine:init', () => {
+    Alpine.store('sidebar', {
+        collapsed: localStorage.getItem('sidebarCollapsed') === 'true',
+        toggle() {
+            this.collapsed = !this.collapsed;
+            localStorage.setItem('sidebarCollapsed', this.collapsed);
+        },
+    });
+});

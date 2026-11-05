@@ -108,7 +108,7 @@ new #[Layout('layouts.app')] class extends Component
                 'labels' => ['Verificados', 'No encontrados', 'Pendientes'],
                 'datasets' => [[
                     'data' => [$kpis['verificados'], $kpis['no_encontrados'], $kpis['pendientes']],
-                    'backgroundColor' => ['#059669', '#e11d48', '#cbd5e1'],
+                    'backgroundColor' => ['#1A7A42', '#7A1E1E', '#EDE8EC'],
                 ]],
             ],
             'options' => [
@@ -128,7 +128,7 @@ new #[Layout('layouts.app')] class extends Component
                 'datasets' => [[
                     'label' => '% cumplimiento',
                     'data' => $filas->map(fn ($f) => $this->porcentaje($f->activos_inventariados, $f->total_activos))->all(),
-                    'backgroundColor' => '#0f766e',
+                    'backgroundColor' => '#CF1D1D',
                     'borderRadius' => 6,
                 ]],
             ],

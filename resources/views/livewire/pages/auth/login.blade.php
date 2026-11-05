@@ -25,13 +25,16 @@ new #[Layout('layouts.guest')] class extends Component
 }; ?>
 
 <div>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    <h2 class="text-xl font-bold text-ink dark:text-white">Iniciar sesión</h2>
+    <p class="mt-1 text-sm text-ink-secondary dark:text-gray-400">Ingresa con tu cuenta para continuar.</p>
 
-    <x-input-error :messages="$errors->get('sso')" class="mb-4" />
+    <!-- Session Status -->
+    <x-auth-session-status class="mt-4" :status="session('status')" />
+
+    <x-input-error :messages="$errors->get('sso')" class="mt-4" />
 
     @if (config('services.sso.activo'))
-        <a href="{{ route('sso.redirect') }}" class="btn-microsoft">
+        <a href="{{ route('sso.redirect') }}" class="btn-microsoft mt-6">
             <svg width="20" height="20" viewBox="0 0 21 21" aria-hidden="true">
                 <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
                 <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
@@ -44,11 +47,13 @@ new #[Layout('layouts.guest')] class extends Component
 
     @if (! config('services.sso.activo') || ! config('services.sso.solo'))
         @if (config('services.sso.activo'))
-            <div class="my-4 flex items-center gap-3 text-xs text-ink-400">
-                <span class="h-px flex-1 bg-ink-200"></span>
+            <div class="my-5 flex items-center gap-3 text-xs uppercase tracking-wide text-ink-secondary dark:text-gray-400">
+                <span class="h-px flex-1 bg-line dark:bg-white/10"></span>
                 o con tu correo
-                <span class="h-px flex-1 bg-ink-200"></span>
+                <span class="h-px flex-1 bg-line dark:bg-white/10"></span>
             </div>
+        @else
+            <div class="mt-6"></div>
         @endif
 
     <form wire:submit="login" class="space-y-4">
@@ -71,28 +76,27 @@ new #[Layout('layouts.guest')] class extends Component
             <x-input-error :messages="$errors->get('form.password')" class="mt-2" />
         </div>
 
-        <!-- Remember Me -->
-        <label for="remember" class="flex items-center gap-2 text-sm text-ink-600">
-            <input wire:model="form.remember" id="remember" type="checkbox" class="rounded border-ink-300 text-brand-700 shadow-sm focus:ring-brand-500" name="remember">
-            Recordarme
-        </label>
+        <div class="flex items-center justify-between">
+            <label for="remember" class="flex items-center gap-2 text-sm text-ink dark:text-gray-300">
+                <input wire:model="form.remember" id="remember" type="checkbox" class="rounded border-line text-brand-600 shadow-sm focus:ring-brand-500" name="remember">
+                Recordarme
+            </label>
 
-        <div class="flex items-center justify-between pt-2">
             @if (Route::has('password.request'))
-                <a class="text-sm text-ink-500 underline hover:text-ink-700" href="{{ route('password.request') }}" wire:navigate>
+                <a class="text-sm font-medium text-brand-600 hover:underline" href="{{ route('password.request') }}" wire:navigate>
                     ¿Olvidaste tu contraseña?
                 </a>
             @endif
-
-            <x-primary-button>
-                Iniciar sesión
-            </x-primary-button>
         </div>
+
+        <x-primary-button class="w-full justify-center py-2.5">
+            Iniciar sesión
+        </x-primary-button>
     </form>
 
-    <p class="mt-6 text-center text-sm text-ink-500">
+    <p class="mt-6 text-center text-sm text-ink-secondary dark:text-gray-400">
         ¿No tienes cuenta?
-        <a href="{{ route('register') }}" wire:navigate class="font-medium text-brand-700 underline hover:text-brand-800">
+        <a href="{{ route('register') }}" wire:navigate class="font-medium text-brand-600 hover:underline">
             Regístrate
         </a>
     </p>
