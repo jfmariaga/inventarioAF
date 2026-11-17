@@ -221,7 +221,7 @@ new #[Layout('layouts.app')] class extends Component
                                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
                                     </svg>
                                 </span>
-                                <input id="fotoEquipo" type="file"  wire:model="form.fotoEquipo" class="block w-full text-sm text-ink-600 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100" />
+                                <input id="fotoEquipo" type="file" accept="image/*" wire:model="form.fotoEquipo" class="block w-full text-sm text-ink-600 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100" />
                             </div>
 
                             <x-input-error :messages="$errors->get('form.fotoEquipo')" class="mt-2" />
@@ -233,8 +233,10 @@ new #[Layout('layouts.app')] class extends Component
                                 Cargando imagen…
                             </div>
 
-                            @if ($form->fotoEquipo)
+                            @if ($form->fotoEquipo && $form->fotoEquipo->isPreviewable())
                                 <img src="{{ $form->fotoEquipo->temporaryUrl() }}" class="mt-2 h-32 w-32 rounded-lg border border-ink-200 object-cover" alt="Previsualización foto del equipo" />
+                            @elseif ($form->fotoEquipo)
+                                <p class="mt-2 text-xs text-rose-600">El archivo seleccionado no es una imagen válida.</p>
                             @elseif ($form->yaTieneFotoEquipo)
                                 <img src="{{ route('fotos.mostrar', [$detalle, 'equipo']) }}" class="mt-2 h-32 w-32 rounded-lg border border-ink-200 object-cover cursor-zoom-in" alt="Foto del equipo guardada" onclick="verFoto('{{ route('fotos.mostrar', [$detalle, 'equipo']) }}', 'Foto del equipo')" />
                                 <p class="mt-1 text-xs text-ink-400">Ya hay una foto guardada; sube una nueva solo si quieres reemplazarla.</p>
@@ -250,7 +252,7 @@ new #[Layout('layouts.app')] class extends Component
                                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
                                     </svg>
                                 </span>
-                                <input id="fotoPlaca" type="file"  wire:model="form.fotoPlaca" class="block w-full text-sm text-ink-600 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100" />
+                                <input id="fotoPlaca" type="file" accept="image/*" wire:model="form.fotoPlaca" class="block w-full text-sm text-ink-600 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100" />
                             </div>
 
                             <x-input-error :messages="$errors->get('form.fotoPlaca')" class="mt-2" />
@@ -262,8 +264,10 @@ new #[Layout('layouts.app')] class extends Component
                                 Cargando imagen…
                             </div>
 
-                            @if ($form->fotoPlaca)
+                            @if ($form->fotoPlaca && $form->fotoPlaca->isPreviewable())
                                 <img src="{{ $form->fotoPlaca->temporaryUrl() }}" class="mt-2 h-32 w-32 rounded-lg border border-ink-200 object-cover" alt="Previsualización foto de la placa" />
+                            @elseif ($form->fotoPlaca)
+                                <p class="mt-2 text-xs text-rose-600">El archivo seleccionado no es una imagen válida.</p>
                             @elseif ($form->yaTieneFotoPlaca)
                                 <img src="{{ route('fotos.mostrar', [$detalle, 'placa']) }}" class="mt-2 h-32 w-32 rounded-lg border border-ink-200 object-cover cursor-zoom-in" alt="Foto de la placa guardada" onclick="verFoto('{{ route('fotos.mostrar', [$detalle, 'placa']) }}', 'Foto de la placa')" />
                                 <p class="mt-1 text-xs text-ink-400">Ya hay una foto guardada; sube una nueva solo si quieres reemplazarla.</p>
