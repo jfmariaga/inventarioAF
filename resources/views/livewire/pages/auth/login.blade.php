@@ -95,10 +95,7 @@ new #[Layout('layouts.guest')] class extends Component
     </form>
 
     <p class="mt-6 text-center text-sm text-ink-secondary dark:text-gray-400">
-        ¿No tienes cuenta?
-        <a href="{{ route('register') }}" wire:navigate class="font-medium text-brand-600 hover:underline">
-            Regístrate
-        </a>
+        El registro a la aplicación es únicamente a través del inicio de sesión corporativo (SSO).
     </p>
     @endif
 </div>

@@ -21,6 +21,15 @@ class ProcesadorFotoActivo
      */
     public function guardar(UploadedFile $archivo, int $activoId, string $tipo): string
     {
+        if (! $this->esImagen($archivo)) {
+            $extension = strtolower($archivo->getClientOriginalExtension() ?: $archivo->extension() ?: 'bin');
+            $ruta = "activos/{$activoId}/{$tipo}-".now()->timestamp.".{$extension}";
+
+            Storage::disk(self::DISCO)->put($ruta, $archivo->get());
+
+            return $ruta;
+        }
+
         $imagen = Image::read($archivo)->scaleDown(width: self::LADO_MAXIMO, height: self::LADO_MAXIMO);
         $codificada = $imagen->toJpeg(quality: self::CALIDAD_JPEG);
 
@@ -29,6 +38,11 @@ class ProcesadorFotoActivo
         Storage::disk(self::DISCO)->put($ruta, (string) $codificada);
 
         return $ruta;
+    }
+
+    private function esImagen(UploadedFile $archivo): bool
+    {
+        return str_starts_with((string) $archivo->getMimeType(), 'image/');
     }
 
     /**

@@ -63,8 +63,8 @@ class CapturaActivoForm extends Form
             'condicion' => [Rule::requiredIf($exigeEvidencia), 'nullable', 'in:uso,desuso'],
             'motivoDesuso' => [Rule::requiredIf($exigeEvidencia && $this->condicion === 'desuso'), 'nullable', 'string', 'max:2000'],
             'observacion' => [Rule::requiredIf($this->estado === 'no_encontrado'), 'nullable', 'string', 'max:2000'],
-            'fotoEquipo' => [Rule::requiredIf($exigeEvidencia && ! $this->yaTieneFotoEquipo), 'nullable', 'image', 'max:10240'],
-            'fotoPlaca' => ['nullable', 'image', 'max:10240'],
+            'fotoEquipo' => [Rule::requiredIf($exigeEvidencia && ! $this->yaTieneFotoEquipo), 'nullable', 'file', 'mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx', 'max:10240'],
+            'fotoPlaca' => [Rule::requiredIf($exigeEvidencia && ! $this->yaTieneFotoPlaca), 'nullable', 'file', 'mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx', 'max:10240'],
         ], $reglaUbicacion);
     }
 
@@ -77,6 +77,7 @@ class CapturaActivoForm extends Form
             'motivoDesuso.required' => 'Debes indicar el motivo del desuso.',
             'observacion.required' => 'La observación es obligatoria cuando el activo no se encuentra.',
             'fotoEquipo.required' => 'La foto del equipo es obligatoria para este estado.',
+            'fotoPlaca.required' => 'La foto de la placa es obligatoria para este estado.',
         ];
     }
 }

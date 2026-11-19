@@ -50,6 +50,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('can:admin.catalogos')
         ->name('admin.catalogos');
 
+    Volt::route('admin/activos', 'admin.activos-maestro')
+        ->middleware('can:admin.activos')
+        ->name('admin.activos');
+
     Volt::route('admin/exportaciones', 'admin.solicitar-exportacion')
         ->middleware('can:inventario.exportar')
         ->name('admin.exportaciones');

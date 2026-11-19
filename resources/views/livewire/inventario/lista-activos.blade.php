@@ -45,7 +45,8 @@ new #[Layout('layouts.app')] class extends Component
 
                 $query->where(function ($query) use ($termino) {
                     $query->where('numero_activo', 'like', "%{$termino}%")
-                        ->orWhere('denominacion', 'like', "%{$termino}%");
+                        ->orWhere('denominacion', 'like', "%{$termino}%")
+                        ->orWhere('placa', 'like', "%{$termino}%");
                 });
             })
             ->orderBy('numero_activo')
@@ -69,7 +70,7 @@ new #[Layout('layouts.app')] class extends Component
             <input
                 type="search"
                 wire:model.live.debounce.300ms="busqueda"
-                placeholder="Buscar por activo o nombre..."
+                placeholder="Buscar por activo, placa o nombre..."
                 class="input"
             />
         </div>
@@ -79,6 +80,7 @@ new #[Layout('layouts.app')] class extends Component
                 <thead>
                     <tr>
                         <th>Activo</th>
+                        <th>Placa</th>
                         <th>Denominación</th>
                         <th>Estado</th>
                         <th>Evidencia</th>
@@ -91,6 +93,7 @@ new #[Layout('layouts.app')] class extends Component
                         @php($detalle = $activo->inventarioDetalles->first())
                         <tr>
                             <td class="font-medium text-ink-900">{{ $activo->numero_activo }}</td>
+                            <td>{{ $activo->placa ?? '—' }}</td>
                             <td>{{ $activo->denominacion }}</td>
                             <td>
                                 @php($estado = $detalle?->estado ?? 'pendiente')
@@ -106,20 +109,42 @@ new #[Layout('layouts.app')] class extends Component
                             <td>
                                 <div class="flex gap-1.5">
                                     @if ($detalle?->foto_equipo_path)
-                                        <img
-                                            src="{{ route('fotos.mostrar', [$detalle, 'equipo']) }}"
-                                            alt="Foto del equipo {{ $activo->numero_activo }}"
-                                            class="foto-thumb"
-                                            onclick="verFoto('{{ route('fotos.mostrar', [$detalle, 'equipo']) }}', 'Equipo — {{ $activo->numero_activo }}')"
-                                        />
+                                        @if (\Illuminate\Support\Str::endsWith($detalle->foto_equipo_path, ['.jpg', '.jpeg', '.png']))
+                                            <img
+                                                src="{{ route('fotos.mostrar', [$detalle, 'equipo']) }}"
+                                                alt="Foto del equipo {{ $activo->numero_activo }}"
+                                                class="foto-thumb"
+                                                onclick="verFoto('{{ route('fotos.mostrar', [$detalle, 'equipo']) }}', 'Equipo — {{ $activo->numero_activo }}')"
+                                            />
+                                        @else
+                                            <a
+                                                href="{{ route('fotos.mostrar', [$detalle, 'equipo']) }}"
+                                                target="_blank"
+                                                title="Equipo — archivo guardado"
+                                                class="foto-thumb flex items-center justify-center bg-ink-50 text-ink-500"
+                                            >
+                                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                            </a>
+                                        @endif
                                     @endif
                                     @if ($detalle?->foto_placa_path)
-                                        <img
-                                            src="{{ route('fotos.mostrar', [$detalle, 'placa']) }}"
-                                            alt="Foto de la placa {{ $activo->numero_activo }}"
-                                            class="foto-thumb"
-                                            onclick="verFoto('{{ route('fotos.mostrar', [$detalle, 'placa']) }}', 'Placa — {{ $activo->numero_activo }}')"
-                                        />
+                                        @if (\Illuminate\Support\Str::endsWith($detalle->foto_placa_path, ['.jpg', '.jpeg', '.png']))
+                                            <img
+                                                src="{{ route('fotos.mostrar', [$detalle, 'placa']) }}"
+                                                alt="Foto de la placa {{ $activo->numero_activo }}"
+                                                class="foto-thumb"
+                                                onclick="verFoto('{{ route('fotos.mostrar', [$detalle, 'placa']) }}', 'Placa — {{ $activo->numero_activo }}')"
+                                            />
+                                        @else
+                                            <a
+                                                href="{{ route('fotos.mostrar', [$detalle, 'placa']) }}"
+                                                target="_blank"
+                                                title="Placa — archivo guardado"
+                                                class="foto-thumb flex items-center justify-center bg-ink-50 text-ink-500"
+                                            >
+                                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                            </a>
+                                        @endif
                                     @endif
                                 </div>
                             </td>
@@ -134,7 +159,7 @@ new #[Layout('layouts.app')] class extends Component
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="py-6 text-center text-ink-400">
+                            <td colspan="7" class="py-6 text-center text-ink-400">
                                 No se encontraron activos para "{{ $busqueda }}".
                             </td>
                         </tr>

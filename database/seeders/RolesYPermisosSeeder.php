@@ -22,6 +22,7 @@ class RolesYPermisosSeeder extends Seeder
             'admin.roles',
             'admin.periodos',
             'admin.catalogos',
+            'admin.activos',
         ];
 
         foreach ($permisos as $permiso) {
