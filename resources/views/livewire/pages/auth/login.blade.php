@@ -68,10 +68,28 @@ new #[Layout('layouts.guest')] class extends Component
         <div>
             <x-input-label for="password" value="Contraseña" />
 
-            <x-text-input wire:model="form.password" id="password"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+            <div class="relative" x-data="{ mostrarPassword: false }">
+                <x-text-input wire:model="form.password" id="password"
+                                type="password"
+                                x-bind:type="mostrarPassword ? 'text' : 'password'"
+                                name="password"
+                                required autocomplete="current-password"
+                                class="pr-10" />
+
+                <button
+                    type="button"
+                    x-on:click="mostrarPassword = ! mostrarPassword"
+                    tabindex="-1"
+                    class="absolute inset-y-0 right-0 flex items-center pr-3 text-ink-secondary hover:text-ink dark:text-gray-400"
+                >
+                    <svg x-show="! mostrarPassword" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" />
+                    </svg>
+                    <svg x-show="mostrarPassword" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.8 21.8 0 0 1-3.22 4.44M14.12 14.12a3 3 0 1 1-4.24-4.24" /><line x1="1" y1="1" x2="23" y2="23" />
+                    </svg>
+                </button>
+            </div>
 
             <x-input-error :messages="$errors->get('form.password')" class="mt-2" />
         </div>
