@@ -6,6 +6,7 @@ use App\Models\Empresa;
 use App\Models\Exportacion;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Artisan;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
@@ -48,7 +49,18 @@ new #[Layout('layouts.app')] class extends Component
 
         GenerarExportacionInventario::dispatch($exportacion->id);
 
-        $this->dispatch('toast', icon: 'success', title: 'Exportación solicitada. Te avisaremos cuando esté lista.');
+        // En hosting compartido no hay un `queue:work` corriendo de forma
+        // permanente (ni siempre se puede configurar el cron del scheduler),
+        // así que procesamos la cola aquí mismo justo después de encolar el
+        // job, para no depender de que alguien la corra manualmente.
+        set_time_limit(60);
+        Artisan::call('queue:work', [
+            '--stop-when-empty' => true,
+            '--max-time' => 50,
+            '--tries' => 3,
+        ]);
+
+        $this->dispatch('toast', icon: 'success', title: 'Exportación solicitada.');
     }
 }; ?>
 
