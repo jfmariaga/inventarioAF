@@ -28,6 +28,22 @@ window.Swal = Swal;
 /** Toast de notificación (reemplaza los mensajes flash). */
 window.toast = (icon, title) => Toast.fire({ icon: icon || 'success', title });
 
+/**
+ * Confirmación estilizada (reemplaza confirm() nativo usado por wire:confirm).
+ * Uso: <button @click="(await confirmarSwal('¿Seguro?')) && $wire.metodo(id)">
+ */
+window.confirmarSwal = (mensaje, opciones = {}) => Swal.fire({
+    icon: 'warning',
+    text: mensaje,
+    showCancelButton: true,
+    confirmButtonColor: BRAND,
+    cancelButtonColor: '#6b7280',
+    confirmButtonText: 'Sí, continuar',
+    cancelButtonText: 'Cancelar',
+    reverseButtons: true,
+    ...opciones,
+}).then((resultado) => resultado.isConfirmed);
+
 /** Previsualización de una foto en un modal grande (activos inventariados). */
 window.verFoto = (src, titulo) => {
     Swal.fire({

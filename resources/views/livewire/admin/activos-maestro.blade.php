@@ -321,8 +321,7 @@ new #[Layout('layouts.app')] class extends Component
                                 </button>
                                 <button
                                     type="button"
-                                    wire:click="eliminar({{ $activo->id }})"
-                                    wire:confirm="¿Eliminar este activo? También se eliminará su historial de inventario. Esta acción no se puede deshacer."
+                                    @click="(await confirmarSwal('¿Eliminar este activo? También se eliminará su historial de inventario. Esta acción no se puede deshacer.')) && $wire.eliminar({{ $activo->id }})"
                                     class="btn btn-danger btn-xs"
                                 >
                                     Eliminar

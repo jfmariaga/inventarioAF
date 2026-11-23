@@ -140,7 +140,7 @@ new #[Layout('layouts.app')] class extends Component
                             <td>{{ $periodo->detalles_count }}</td>
                             <td class="text-right">
                                 @if ($periodo->estado === 'abierto')
-                                    <button type="button" wire:click="cerrar({{ $periodo->id }})" wire:confirm="¿Cerrar este periodo? Los usuarios ya no podrán capturar sobre él." class="btn btn-danger btn-xs">
+                                    <button type="button" @click="(await confirmarSwal('¿Cerrar este periodo? Los usuarios ya no podrán capturar sobre él.')) && $wire.cerrar({{ $periodo->id }})" class="btn btn-danger btn-xs">
                                         Cerrar
                                     </button>
                                 @else

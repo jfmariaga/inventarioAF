@@ -297,8 +297,7 @@ new #[Layout('layouts.app')] class extends Component
                                     </button>
                                     <button
                                         type="button"
-                                        wire:click="eliminar({{ $novedad->id }})"
-                                        wire:confirm="¿Eliminar esta novedad? Esta acción no se puede deshacer."
+                                        @click="(await confirmarSwal('¿Eliminar esta novedad? Esta acción no se puede deshacer.')) && $wire.eliminar({{ $novedad->id }})"
                                         class="btn btn-danger btn-xs"
                                     >
                                         Eliminar
