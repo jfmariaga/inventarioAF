@@ -3,6 +3,7 @@
 use App\Models\Activo;
 use App\Models\CentroCostos;
 use App\Models\Empresa;
+use App\Support\Busqueda;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
@@ -79,13 +80,14 @@ new #[Layout('layouts.app')] class extends Component
     public function getActivosProperty(): LengthAwarePaginator
     {
         $termino = trim($this->busqueda);
+        $terminoNumerico = Busqueda::sinCerosIniciales($termino);
 
         return Activo::with('centroCostos.empresa')
-            ->when($termino !== '', function ($query) use ($termino) {
-                $query->where(function ($query) use ($termino) {
-                    $query->where('numero_activo', 'like', "%{$termino}%")
+            ->when($termino !== '', function ($query) use ($termino, $terminoNumerico) {
+                $query->where(function ($query) use ($termino, $terminoNumerico) {
+                    $query->where('numero_activo', 'like', "%{$terminoNumerico}%")
                         ->orWhere('denominacion', 'like', "%{$termino}%")
-                        ->orWhere('placa', 'like', "%{$termino}%");
+                        ->orWhere('placa', 'like', "%{$terminoNumerico}%");
                 });
             })
             ->when($this->filtroCentroCostosId, function ($query) {

@@ -5,6 +5,7 @@ use App\Models\CentroCostos;
 use App\Models\NovedadActivo;
 use App\Models\Ubicacion;
 use App\Services\ProcesadorFotoActivo;
+use App\Support\Busqueda;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
@@ -43,13 +44,14 @@ new #[Layout('layouts.app')] class extends Component
         }
 
         $termino = trim($this->busqueda);
+        $terminoActivo = Busqueda::sinCerosIniciales($termino);
 
         return CentroCostos::with('empresa')
-            ->where(function ($query) use ($termino) {
+            ->where(function ($query) use ($termino, $terminoActivo) {
                 $query->where('codigo', 'like', "%{$termino}%")
                     ->orWhere('descripcion', 'like', "%{$termino}%")
-                    ->orWhereHas('activos', function ($query) use ($termino) {
-                        $query->where('numero_activo', 'like', "%{$termino}%");
+                    ->orWhereHas('activos', function ($query) use ($terminoActivo) {
+                        $query->where('numero_activo', 'like', "%{$terminoActivo}%");
                     });
             })
             ->orderBy('codigo')
@@ -63,7 +65,7 @@ new #[Layout('layouts.app')] class extends Component
             return collect();
         }
 
-        $termino = trim($this->busquedaActivo);
+        $termino = Busqueda::sinCerosIniciales(trim($this->busquedaActivo));
 
         return Activo::with('centroCostos')
             ->where(function ($query) use ($termino) {

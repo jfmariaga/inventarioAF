@@ -2,6 +2,7 @@
 
 use App\Models\CentroCostos;
 use App\Models\Inventario;
+use App\Support\Busqueda;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
@@ -42,11 +43,12 @@ new #[Layout('layouts.app')] class extends Component
             }])
             ->when(trim($this->busqueda) !== '', function ($query) {
                 $termino = trim($this->busqueda);
+                $terminoNumerico = Busqueda::sinCerosIniciales($termino);
 
-                $query->where(function ($query) use ($termino) {
-                    $query->where('numero_activo', 'like', "%{$termino}%")
+                $query->where(function ($query) use ($termino, $terminoNumerico) {
+                    $query->where('numero_activo', 'like', "%{$terminoNumerico}%")
                         ->orWhere('denominacion', 'like', "%{$termino}%")
-                        ->orWhere('placa', 'like', "%{$termino}%");
+                        ->orWhere('placa', 'like', "%{$terminoNumerico}%");
                 });
             })
             ->orderBy('numero_activo')
