@@ -34,6 +34,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('can:inventario.ver')
         ->name('fotos.mostrar');
 
+    Route::get('fotos/novedades/{novedadActivo}/{tipo}', [FotoActivoController::class, 'mostrarNovedad'])
+        ->middleware('can:admin.novedades')
+        ->name('fotos.novedad.mostrar');
+
     Volt::route('cumplimiento', 'cumplimiento.panel')
         ->middleware('can:cumplimiento.ver')
         ->name('cumplimiento.index');
@@ -53,6 +57,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Volt::route('admin/activos', 'admin.activos-maestro')
         ->middleware('can:admin.activos')
         ->name('admin.activos');
+
+    Volt::route('admin/novedades', 'admin.novedades-activos')
+        ->middleware('can:admin.novedades')
+        ->name('admin.novedades');
 
     Volt::route('admin/exportaciones', 'admin.solicitar-exportacion')
         ->middleware('can:inventario.exportar')

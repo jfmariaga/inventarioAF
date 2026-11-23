@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\InventarioDetalle;
+use App\Models\NovedadActivo;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -14,6 +15,18 @@ class FotoActivoController extends Controller
 
         $columna = $tipo === 'equipo' ? 'foto_equipo_path' : 'foto_placa_path';
         $ruta = $inventarioDetalle->{$columna};
+
+        abort_unless($ruta && Storage::disk('local')->exists($ruta), 404);
+
+        return Storage::disk('local')->response($ruta);
+    }
+
+    public function mostrarNovedad(NovedadActivo $novedadActivo, string $tipo): StreamedResponse
+    {
+        abort_unless(in_array($tipo, ['equipo', 'placa'], true), 404);
+
+        $columna = $tipo === 'equipo' ? 'foto_equipo_path' : 'foto_placa_path';
+        $ruta = $novedadActivo->{$columna};
 
         abort_unless($ruta && Storage::disk('local')->exists($ruta), 404);
 

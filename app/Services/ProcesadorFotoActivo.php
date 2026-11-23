@@ -19,11 +19,11 @@ class ProcesadorFotoActivo
      * Redimensiona y recomprime la foto subida, la guarda en el disco
      * privado, y devuelve la ruta relativa guardada.
      */
-    public function guardar(UploadedFile $archivo, int $activoId, string $tipo): string
+    public function guardar(UploadedFile $archivo, string $carpeta, string $tipo): string
     {
         if (! $this->esImagen($archivo)) {
             $extension = strtolower($archivo->getClientOriginalExtension() ?: $archivo->extension() ?: 'bin');
-            $ruta = "activos/{$activoId}/{$tipo}-".now()->timestamp.".{$extension}";
+            $ruta = "{$carpeta}/{$tipo}-".now()->timestamp.".{$extension}";
 
             Storage::disk(self::DISCO)->put($ruta, $archivo->get());
 
@@ -33,7 +33,7 @@ class ProcesadorFotoActivo
         $imagen = Image::read($archivo)->scaleDown(width: self::LADO_MAXIMO, height: self::LADO_MAXIMO);
         $codificada = $imagen->toJpeg(quality: self::CALIDAD_JPEG);
 
-        $ruta = "activos/{$activoId}/{$tipo}-".now()->timestamp.'.jpg';
+        $ruta = "{$carpeta}/{$tipo}-".now()->timestamp.'.jpg';
 
         Storage::disk(self::DISCO)->put($ruta, (string) $codificada);
 
@@ -52,16 +52,16 @@ class ProcesadorFotoActivo
      *
      * @return array{0: string, 1: ?string}
      */
-    public function reemplazar(UploadedFile $archivo, int $activoId, string $tipo, ?string $rutaVigenteActual): array
+    public function reemplazar(UploadedFile $archivo, string $carpeta, string $tipo, ?string $rutaVigenteActual): array
     {
         $rutaAnterior = null;
 
         if ($rutaVigenteActual && Storage::disk(self::DISCO)->exists($rutaVigenteActual)) {
-            $rutaAnterior = "activos/{$activoId}/{$tipo}-anterior-".now()->timestamp.'.jpg';
+            $rutaAnterior = "{$carpeta}/{$tipo}-anterior-".now()->timestamp.'.jpg';
             Storage::disk(self::DISCO)->move($rutaVigenteActual, $rutaAnterior);
         }
 
-        $rutaNueva = $this->guardar($archivo, $activoId, $tipo);
+        $rutaNueva = $this->guardar($archivo, $carpeta, $tipo);
 
         return [$rutaNueva, $rutaAnterior];
     }

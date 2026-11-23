@@ -94,25 +94,27 @@ new #[Layout('layouts.app')] class extends Component
         $rutaFotoPlacaAnterior = $this->detalle->foto_placa_path_anterior;
         $fotosReemplazadasEn = $this->detalle->fotos_reemplazadas_en;
 
+        $carpeta = "activos/{$this->activo->id}";
+
         if ($this->form->fotoEquipo) {
             if ($rutaFotoEquipo) {
                 [$rutaFotoEquipo, $rutaFotoEquipoAnterior] = $procesador->reemplazar(
-                    $this->form->fotoEquipo, $this->activo->id, 'equipo', $rutaFotoEquipo
+                    $this->form->fotoEquipo, $carpeta, 'equipo', $rutaFotoEquipo
                 );
                 $fotosReemplazadasEn = now();
             } else {
-                $rutaFotoEquipo = $procesador->guardar($this->form->fotoEquipo, $this->activo->id, 'equipo');
+                $rutaFotoEquipo = $procesador->guardar($this->form->fotoEquipo, $carpeta, 'equipo');
             }
         }
 
         if ($this->form->fotoPlaca) {
             if ($rutaFotoPlaca) {
                 [$rutaFotoPlaca, $rutaFotoPlacaAnterior] = $procesador->reemplazar(
-                    $this->form->fotoPlaca, $this->activo->id, 'placa', $rutaFotoPlaca
+                    $this->form->fotoPlaca, $carpeta, 'placa', $rutaFotoPlaca
                 );
                 $fotosReemplazadasEn = now();
             } else {
-                $rutaFotoPlaca = $procesador->guardar($this->form->fotoPlaca, $this->activo->id, 'placa');
+                $rutaFotoPlaca = $procesador->guardar($this->form->fotoPlaca, $carpeta, 'placa');
             }
         }
 
