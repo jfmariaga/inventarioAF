@@ -10,6 +10,7 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
@@ -108,19 +109,33 @@ class GenerarExportacionInventario implements ShouldQueue
         return $nombreArchivo;
     }
 
+    private const EXTENSIONES_IMAGEN = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
+
     private function incrustarFoto($hoja, ?string $rutaRelativa, string $celda): void
     {
         if (! $rutaRelativa || ! Storage::disk('local')->exists($rutaRelativa)) {
             return;
         }
 
+        $extension = strtolower(pathinfo($rutaRelativa, PATHINFO_EXTENSION));
+        if (! in_array($extension, self::EXTENSIONES_IMAGEN, true)) {
+            return;
+        }
+
         $rutaAbsoluta = Storage::disk('local')->path($rutaRelativa);
 
-        $dibujo = new Drawing;
-        $dibujo->setPath($rutaAbsoluta);
-        $dibujo->setHeight(80);
-        $dibujo->setCoordinates($celda);
-        $dibujo->setWorksheet($hoja);
+        try {
+            $dibujo = new Drawing;
+            $dibujo->setPath($rutaAbsoluta);
+            $dibujo->setHeight(80);
+            $dibujo->setCoordinates($celda);
+            $dibujo->setWorksheet($hoja);
+        } catch (\Throwable $e) {
+            Log::warning('No se pudo incrustar foto en exportación de inventario', [
+                'ruta' => $rutaRelativa,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     private function agregarHojaResumen(Spreadsheet $spreadsheet, Exportacion $exportacion): void
